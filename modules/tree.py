@@ -111,18 +111,6 @@ class Tree:
         raise NoNodeFound("Tree does not contain desired node.")
 
 
-tree = Tree()
-print(tree.setRoot(1))
-print(tree.insert(1, 2, 2, 5))
-print(tree.insert(1, 3, 2, 5))
-print(tree.insert(3, 4, 1, -2))
-node = tree.get(3)
-print(node)
-print(node.getID())
-node2 = node.getChildren()
-for n in node2:
-    print(n.getCapacity())
-    print(n.getCost())
 
 # Create traversal method for tree to find the cost of paths for every leaf from the root and rank in ascending order
 # Return list of nodes and paths in order

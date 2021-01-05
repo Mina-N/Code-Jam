@@ -1,3 +1,28 @@
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+class NoRoot(Error):
+    """Exception raised for a tree with no root.
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+class NoNodeFound(Error):
+    """Exception raised for a tree without desired node
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
+
 class Node:
 
     def __init__(self, id, capacity = None, cost = None):
@@ -19,16 +44,16 @@ class Node:
         self.children = children
 
     def getID(self):
-        return(self.id)
+        return self.id
 
     def getCapacity(self):
-        return(self.capacity)
+        return self.capacity
 
     def getCost(self):
-        return(self.cost)
+        return self.cost
 
     def getChildren(self):
-        return(self.children)
+        return self.children
 
 
 class Tree:
@@ -38,52 +63,68 @@ class Tree:
 
     def setRoot(self, id):
         self.root = Node(id)
+        return True
 
     def insert(self, id_source, id_dest, capacity, cost):
         if (self.root == None):
-            self.setRoot(id_source)
+            return self.setRoot(id_source)
         else:
-            self.insertNode(self.root, id_source, id_dest, capacity, cost)
+            return self.insertNode(self.root, id_source, id_dest, capacity, cost)
 
     def insertNode(self, currentNode, id_source, id_dest, capacity, cost):
-        if (currentNode.id != id_source):
-            if (currentNode.getChildren() != None):
-                for child in currentNode.getChildren():
-                    self.insertNode(child, id_source, id_dest, capacity, cost)
+        if (currentNode.id == id_source):
+            if (currentNode.getChildren() == None):
+                children = []
+                children.append(Node(id_dest, capacity, cost))
+                currentNode.setChildren(children)
             else:
-                return(False)
-
+                children = currentNode.getChildren()
+                children.append(Node(id_dest, capacity, cost))
+                currentNode.setChildren(children)
+            return True
         if (currentNode.getChildren() == None):
-            children = []
-            children.append(Node(id_dest, capacity, cost))
-            currentNode.setChildren(children)
-        else:
-            children = currentNode.getChildren()
-            children.append(Node(id_dest, capacity, cost))
-            currentNode.setChildren(children)
-
-        return(True)
+            return
+        for child in currentNode.getChildren():
+            success = self.insertNode(child, id_source, id_dest, capacity, cost)
+            if (success):
+                return success
+        return False
 
     def get(self, id_source):
         if (self.root == None):
-            return(False)
-        self.getNode(self.root, id_source)
+            raise NoRoot("Tree does not contain root.")
+        try:
+            return self.getNode(self.root, id_source)
+        except NoNodeFound as fail:
+            return fail.message
+
 
     def getNode(self, currentNode, id_source):
-        if (currentNode.getID() != id_source):
-            if (currentNode.getChildren() != None):
-                for child in currentNode.getChildren():
-                    self.getNode(child, id_source)
-            else:
-                return(False)
-
-        return(currentNode)
+        if (currentNode.getID() == id_source):
+            return currentNode
+        if (currentNode.getChildren() == None):
+            return
+        for child in currentNode.getChildren():
+            node = self.getNode(child, id_source)
+            if (node):
+                return node
+        raise NoNodeFound("Tree does not contain desired node.")
 
 
 tree = Tree()
-tree.setRoot(7)
+print(tree.setRoot(1))
+print(tree.insert(1, 2, 2, 5))
+print(tree.insert(1, 3, 2, 5))
+print(tree.insert(3, 4, 1, -2))
+node = tree.get(3)
+print(node)
+print(node.getID())
+node2 = node.getChildren()
+for n in node2:
+    print(n.getCapacity())
+    print(n.getCost())
 
-# Create traversal method for tree to find the cost of paths for every node from the root and rank in ascending order
+# Create traversal method for tree to find the cost of paths for every leaf from the root and rank in ascending order
 # Return list of nodes and paths in order
 
 # Create method to find minimum capacity for each unique node path

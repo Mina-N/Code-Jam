@@ -4,15 +4,18 @@ import tree
 
 def reorder(slopes): # List of lists, where each list contains starting pt, ending pt, capacity, and cost
     slopeCount = 0
-    restPoint = 1
     newSlopes = []
+    found = []
+    seen = [1]
     while (slopeCount < len(slopes)):
+        recentlySeen = []
         for slope in slopes:
-            if (slope[0] == restPoint):
+            if ((slope[0] in seen) and not (slope[0] in found)):
                 newSlopes.append(slope)
-                restPoint = slope[1]
+                recentlySeen.append(slope[1])
                 slopeCount += 1
-                break
+        found += seen
+        seen = recentlySeen
     return newSlopes
 
 def buildTree(slopes):
@@ -26,7 +29,7 @@ def solve(tree):
     pass
 
 if __name__ == "__main__":
-    exit(1)
+
     testCases = input()
     for caseNum in range(1, testCases + 1):
         slopes = []
@@ -41,20 +44,6 @@ if __name__ == "__main__":
         slopes.append(slope)
         slopesReorder = reorder(slopes)
         tree = buildTree(slopesReorder)
-        capacity, cost = solve(tree)
-
-        print("Case #%i: %s %s" % (caseNum, capacity, cost))
-
-
-# tree = tree.Tree()
-# tree.setRoot(1)
-# print(tree.insert(1, 2, 2, 5))
-# print(tree.insert(1, 3, 2, 5))
-# print(tree.insert(3, 4, 1, -2))
-# node = tree.get(3)
-# print(node)
-# print(node.getID())
-# node2 = node.getChildren()
-# for n in node2:
-#     print(n.getCapacity())
-#     print(n.getCost())
+    #     capacity, cost = solve(tree)
+    #
+    #     print("Case #%i: %s %s" % (caseNum, capacity, cost))

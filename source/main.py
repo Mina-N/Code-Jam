@@ -21,29 +21,25 @@ def reorder(slopes): # List of lists, where each list contains starting pt, endi
 def buildTree(slopes):
     newTree = tree.Tree()
     newTree.setRoot(1)
-    for slope in len(slopes):
+    for slope in slopes:
         newTree.insert(slope[0], slope[1], slope[2], slope[3])
     return newTree
 
 def solve(tree):
-    pass
+    costList = tree.calculate()
+    capacity, cost = tree.maxCapMinCost(costList)
+    return capacity, cost
 
 if __name__ == "__main__":
-
-    testCases = input()
+    testCases = int(input())
     for caseNum in range(1, testCases + 1):
         slopes = []
-        restPoints = input()
+        restPoints = int(input())
         for restPoint in range(1, restPoints):
-            slope = []
-            slope.append(input()) # Slope starting rest point
-            slope.append(input()) # Slope ending rest point
-            slope.append(input()) # Capacity of slope
-            slope.append(input()) # Cost of slope
-
-        slopes.append(slope)
+            slope = list(map(int, input().split())) # Slope starting rest point, ending rest point, capacity, cost
+            slopes.append(slope)
         slopesReorder = reorder(slopes)
         tree = buildTree(slopesReorder)
-    #     capacity, cost = solve(tree)
-    #
-    #     print("Case #%i: %s %s" % (caseNum, capacity, cost))
+        exit(1)
+        capacity, cost = solve(tree)
+        print("Case #%i: %s %s" % (caseNum, capacity, cost))

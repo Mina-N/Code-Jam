@@ -22,6 +22,16 @@ class NoNodeFound(Error):
     def __init__(self, message):
         self.message = message
 
+class NoCost(Error):
+    """Exception raised when trying to find cost of a tree with only a root
+
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
+
 
 class Node:
 
@@ -110,13 +120,63 @@ class Tree:
                 return node
         raise NoNodeFound("Tree does not contain desired node.")
 
+    def calculate(self):
+        if (self.root == None):
+            raise NoRoot("Tree does not contain root.")
+        try:
+            startList = []
+            parents = []
+            return self.calculateCost(self.root, startList, 0, 1000, parents)
+        except NoCost as fail:
+            return fail.message
 
+    # Traversal method to find the cost of paths and minimum capacity for every node from the root.
+    # Returns list of nodes, costs, and capacities.
 
-# Create traversal method for tree to find the cost of paths for every leaf from the root and rank in ascending order
-# Return list of nodes and paths in order
+    def calculateCost(self, currentNode, costList, cost, minCapacity, parents): # will only find sum of costs of one path with leaf
+        if (currentNode.getChildren() == None):
+            if (currentNode.getID() == 1):
+                raise NoCost("Root does not have cost.")
+            newParents = list(parents)
+            costList.append((currentNode.getID(), cost, minCapacity, newParents))
+            return costList
+        if (currentNode.getID() != 1):
+            newParents = list(parents)
+            costList.append((currentNode.getID(), cost, minCapacity, newParents))
 
-# Create method to find minimum capacity for each unique node path
-# Return minimum capacity
+        newParents = list(parents)
+        newParents.append(currentNode.getID())
+        parents = newParents
 
-# Create method to find cost of path given minimum capacity
-# Return cost of path
+        for child in currentNode.getChildren():
+            if (child.getCapacity() < minCapacity):
+                minCapacity = child.getCapacity()
+            costList = self.calculateCost(child, costList, cost + child.getCost(), minCapacity, parents)
+
+        return costList
+
+# tree = Tree()
+# tree.setRoot(1)
+# print(tree.insert(1, 2, 2, 5))
+# print(tree.insert(1, 3, 2, 5))
+# print(tree.insert(3, 4, 1, -2))
+# node = tree.get(3)
+# print(node)
+# print(node.getID())
+# node2 = node.getChildren()
+# for n in node2:
+#     print(n.getCapacity())
+#     print(n.getCost())
+# listCosts = tree.calculate()
+# print(listCosts)
+
+# tree = Tree()
+# tree.setRoot(1)
+# print(tree.insert(1, 3, 5, 5))
+# print(tree.insert(1, 4, 2, -1))
+# print(tree.insert(3, 2, 3, -2))
+# print(tree.insert(3, 5, 2, -1))
+# print(tree.insert(3, 6, 2, 2))
+# print(tree.insert(4, 7, 2, 2))
+# listCosts = tree.calculate()
+# print(listCosts)
